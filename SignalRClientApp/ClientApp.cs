@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using SignalRServerApi;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +16,7 @@ namespace SignalRClientApp
     {
         HubConnection connection;
         internal string ConnectionUrl { get; set; }
+        internal string Token { get; set; }
         public async Task InitializeConnection()
         {
             await WriteToLog("Initalizing connection....");
@@ -23,46 +25,58 @@ namespace SignalRClientApp
                .WithUrl(ConnectionUrl)
                .WithAutomaticReconnect(new[] { TimeSpan.Zero, TimeSpan.Zero, TimeSpan.FromSeconds(10) })
                 .Build();
-           await WriteToLog("Connection Initalized..");
-            connection.Closed += async (error) =>
-            {
-                await WriteToLog("Connection closed....");
-                await Task.Delay(new Random().Next(0, 5) * 1000);
-                await connection.StartAsync();
-            };
+            await WriteToLog("Connection Initalized..");
+            connection.Closed += Connection_Closed;
+            connection.On<string>(HubMessageType.LoginFailed, HandleFailedLogin);
+            await WriteToLog("Starting connection....");
+            await connection.StartAsync();
+            await WriteToLog("Connection started....");
         }
-        public ClientApp(string? url= null)
+        public ClientApp(string token = "")
         {
             InitializeComponent();
-            ConnectionUrl = url;
+            Token = token;
         }
+        
+        
+        private async void HandleFailedLogin(string msg)
+        {
+            //Handle the success login here
+            await WriteToLog(msg);
 
+        }
+        private async Task Connection_Closed(Exception ex)
+        {
+            await WriteToLog("Connection closed....");
+            await Task.Delay(new Random().Next(0, 5) * 1000);
+            await connection.StartAsync();
+            await WriteToLog("Connection restarted....");
+        }
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            if(string.IsNullOrEmpty(txtUrl.Text))
+            if (string.IsNullOrEmpty(txtUrl.Text))
             {
                 MessageBox.Show("Please enter the connection url");
                 return;
             }
-            if(Uri.IsWellFormedUriString(txtUrl.Text, UriKind.Absolute))
+            if (Uri.IsWellFormedUriString(txtUrl.Text, UriKind.Absolute))
             {
                 MessageBox.Show("Please enter a valid url");
                 return;
             }
             ConnectionUrl = txtUrl.Text;
-            Task.Run(()=>InitializeConnection());
+            Task.Run(() => InitializeConnection());
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            await WriteToLog("Starting connection....");
-            await connection.StartAsync();
+
 
         }
         private async Task WriteToLog(string message)
         {
             txtLog.Invoke(new Action(() => txtLog.Text += message + Environment.NewLine));
-            
+
         }
     }
 }

@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SignalRServerApi\SignalRServerApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="ClientApp.cs">
       <SubType>Form</SubType>
     </Compile>
