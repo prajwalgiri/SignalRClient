@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "ClinetwithServer",
+    "Projects": [
+      {
+        "Path": "SignalRServerApi\\SignalRServerApi.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "SignalRClientApp\\SignalRClientApp.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
