@@ -24,7 +24,7 @@ builder.Services.AddAuthentication(options =>
     // Configure the Authority to the expected value for
     // the authentication provider. This ensures the token
     // is appropriately validated.
-    options.Authority = "localhost"; // TODO: Update URL
+    options.Authority = "https://localhost:7109"; // TODO: Update URL
 
     // We have to hook the OnMessageReceived event in order to
     // allow the JWT authentication handler to read the access

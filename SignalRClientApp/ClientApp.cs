@@ -22,7 +22,10 @@ namespace SignalRClientApp
             await WriteToLog("Initalizing connection....");
             await WriteToLog($"Connection Url:{ConnectionUrl}");
             connection = new HubConnectionBuilder()
-               .WithUrl(ConnectionUrl)
+               .WithUrl(ConnectionUrl, options =>
+               {
+                  options.Headers.Add("Authorization", $"Bearer {Token}");
+               })
                .WithAutomaticReconnect(new[] { TimeSpan.Zero, TimeSpan.Zero, TimeSpan.FromSeconds(10) })
                 .Build();
             await WriteToLog("Connection Initalized..");

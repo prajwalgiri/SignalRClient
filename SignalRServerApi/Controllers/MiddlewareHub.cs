@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SignalRServerApi.Helpers;
 using System.Collections.Concurrent;
 
 namespace SignalRServerApi.Controllers
 {
+    [Authorize]
     public class MiddlewareHub : Hub
     {
         private static readonly ConcurrentDictionary<string, string> UserConnections = new();
