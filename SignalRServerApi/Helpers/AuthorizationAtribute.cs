@@ -9,6 +9,7 @@ namespace SignalRServerApi.Helpers
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+           
             // skip authorization if action is decorated with [AllowAnonymous] attribute
             var allowAnonymous = context.ActionDescriptor.EndpointMetadata.OfType<AllowAnonymousAttribute>().Any();
             if (allowAnonymous)

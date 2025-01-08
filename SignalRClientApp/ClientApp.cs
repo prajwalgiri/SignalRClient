@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -19,6 +20,7 @@ namespace SignalRClientApp
         internal string Token { get; set; }
         public async Task InitializeConnection()
         {
+            GetToken();
             await WriteToLog("Initalizing connection....");
             await WriteToLog($"Connection Url:{ConnectionUrl}");
             connection = new HubConnectionBuilder()
@@ -31,7 +33,8 @@ namespace SignalRClientApp
             await WriteToLog("Connection Initalized..");
             connection.Closed += Connection_Closed;
             connection.On<string>(HubMessageType.LoginFailed, HandleFailedLogin);
-            await WriteToLog("Starting connection....");
+            connection.On<ServerResponse>(HubMessageType.InvokeClientAction, HandleClientAction);
+           await WriteToLog("Starting connection....");
             await connection.StartAsync();
             await WriteToLog("Connection started....");
         }
@@ -39,9 +42,24 @@ namespace SignalRClientApp
         {
             InitializeComponent();
             Token = token;
+            WriteToLogSync($"Token:{token}");
+            txtUrl.Text = "https://localhost:7109/connectionhub";
+            InitializeConnection();
         }
-        
-        
+        private  void GetToken()
+        {
+            HttpClient client = new HttpClient();
+            HttpContent httpContent = new StringContent(JsonSerializer.Serialize(new { Username = "test", Password = "test" }), Encoding.UTF8, "application/json");
+            var response = client.PostAsync(ConnectionUrl.Remove(ConnectionUrl.Length-13)+ "login/authenticate", httpContent).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var user = response.Content.ReadAsStringAsync().Result;
+                var obj = JsonSerializer.Deserialize<User>(user);
+                WriteToLogSync("User:" + user);
+                Token= obj.token;
+            }
+        }
+
         private async void HandleFailedLogin(string msg)
         {
             //Handle the success login here
@@ -55,30 +73,31 @@ namespace SignalRClientApp
             await connection.StartAsync();
             await WriteToLog("Connection restarted....");
         }
+        private async Task HandleClientAction(ServerResponse response)
+        {
+
+        }
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtUrl.Text))
-            {
-                MessageBox.Show("Please enter the connection url");
-                return;
-            }
-            if (Uri.IsWellFormedUriString(txtUrl.Text, UriKind.Absolute))
-            {
-                MessageBox.Show("Please enter a valid url");
-                return;
-            }
+            
             ConnectionUrl = txtUrl.Text;
-            Task.Run(() => InitializeConnection());
+            //Task.Run(() => InitializeConnection());
+            InitializeConnection();
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
 
-
+          await connection.StartAsync();
         }
         private async Task WriteToLog(string message)
         {
             txtLog.Invoke(new Action(() => txtLog.Text += message + Environment.NewLine));
+
+        }
+        private  void WriteToLogSync(string message)
+        {
+            txtLog.Text += message + Environment.NewLine;
 
         }
     }
