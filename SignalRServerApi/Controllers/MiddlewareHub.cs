@@ -3,6 +3,7 @@ using SignalRServerApi.Helpers;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace SignalRServerApi.Controllers
 {
@@ -17,7 +18,7 @@ namespace SignalRServerApi.Controllers
         private static readonly ConcurrentDictionary<string, string> UserConnections = new();
         public override Task OnConnectedAsync()
         {
-            _logger.LogInformation("Client Connected, Context:{0}", this.Context);
+            _logger.LogInformation("Client Connected, Context:{0}", JsonSerializer.Serialize( this.Context.User));
             HttpContext httpContext =Context.GetHttpContext();
             //need to identify the connected client for logging only 
             object authUser = httpContext.Items["User"];
@@ -61,18 +62,18 @@ namespace SignalRServerApi.Controllers
         
         public async Task DoStep1()
         {
-            ServerResponse response = new ServerResponse(){ Success=true ,Message="Step1 Done.",data=ActionType.Step1};
+            ServerResponse response = new ServerResponse(){ Success=true ,Message="Step1 Done.",CurrentAction=ActionType.Step1};
             await Clients.Client(Context.ConnectionId).SendAsync(HubMessageType.InvokeClientAction,response);
         }
         public async Task DoStep2()
         {
-            ServerResponse response = new ServerResponse() { Success = true, Message = "Step2 Done.", data = ActionType.Step2 };
+            ServerResponse response = new ServerResponse() { Success = true, Message = "Step2 Done.", CurrentAction = ActionType.Step2 };
             await Clients.Client(Context.ConnectionId).SendAsync(HubMessageType.InvokeClientAction, response);
 
         }
         public async Task DoStep3()
         {
-            ServerResponse response = new ServerResponse() { Success = true, Message = "Step2 Done.", data = ActionType.Step2 };
+            ServerResponse response = new ServerResponse() { Success = true, Message = "Step3 Done.", CurrentAction = ActionType.Step3 };
             await Clients.Client(Context.ConnectionId).SendAsync(HubMessageType.InvokeClientAction, response);
 
         }
