@@ -7,6 +7,8 @@
         public const string InvokeServerAction = "HandleActionAsync";
         public const string InvokeClientAction = "HandleClientActionAsync";
         public const string NotifyServer = "HandleNotificationFromClient";
+        public const string PerfromStep1 = "HandleActionStep1Async";
+
         
     }
     public  enum ActionType

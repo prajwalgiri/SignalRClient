@@ -28,10 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClientApp));
             splitContainer1 = new SplitContainer();
             groupBox1 = new GroupBox();
-            btnStart = new Button();
-            btnConnect = new Button();
             groupBox3 = new GroupBox();
             lblStep4Tick = new Label();
             lblStep3Tick = new Label();
@@ -43,7 +42,6 @@
             lblStep1 = new Label();
             groupBox2 = new GroupBox();
             txtLog = new RichTextBox();
-            txtUrl = new TextBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -72,9 +70,6 @@
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(txtUrl);
-            groupBox1.Controls.Add(btnStart);
-            groupBox1.Controls.Add(btnConnect);
             groupBox1.Controls.Add(groupBox3);
             groupBox1.Location = new Point(10, 17);
             groupBox1.Name = "groupBox1";
@@ -82,26 +77,6 @@
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
             groupBox1.Text = "Connection";
-            // 
-            // btnStart
-            // 
-            btnStart.Location = new Point(154, 348);
-            btnStart.Name = "btnStart";
-            btnStart.Size = new Size(75, 23);
-            btnStart.TabIndex = 2;
-            btnStart.Text = "Send Data";
-            btnStart.UseVisualStyleBackColor = true;
-            btnStart.Click += btnStart_Click;
-            // 
-            // btnConnect
-            // 
-            btnConnect.Location = new Point(26, 348);
-            btnConnect.Name = "btnConnect";
-            btnConnect.Size = new Size(75, 23);
-            btnConnect.TabIndex = 1;
-            btnConnect.Text = "Connect";
-            btnConnect.UseVisualStyleBackColor = true;
-            btnConnect.Click += btnConnect_Click;
             // 
             // groupBox3
             // 
@@ -223,28 +198,21 @@
             txtLog.TabIndex = 0;
             txtLog.Text = "";
             // 
-            // txtUrl
-            // 
-            txtUrl.Location = new Point(26, 308);
-            txtUrl.Name = "txtUrl";
-            txtUrl.PlaceholderText = "Url";
-            txtUrl.Size = new Size(312, 23);
-            txtUrl.TabIndex = 3;
-            // 
             // ClientApp
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(splitContainer1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ClientApp";
             Text = "ClientApp";
+            FormClosing += ClientApp_FormClosing;
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             groupBox2.ResumeLayout(false);
@@ -256,7 +224,6 @@
         private SplitContainer splitContainer1;
         private GroupBox groupBox1;
         private GroupBox groupBox2;
-        private Button btnConnect;
         private GroupBox groupBox3;
         private RichTextBox txtLog;
         private Label lblstep4;
@@ -267,7 +234,5 @@
         private Label lblStep3Tick;
         private Label lblStep2Tick;
         private Label lblStep1Tick;
-        private Button btnStart;
-        private TextBox txtUrl;
     }
 }

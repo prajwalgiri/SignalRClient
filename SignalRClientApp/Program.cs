@@ -15,7 +15,8 @@ namespace SignalRClientApp
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             string token = ""; //token will be passed as argument to the client app
-            Application.Run(new ClientApp(token));
+            //Application.Run(new ClientApp(token));// run application as windows form
+            Application.Run(new TrayIconContext());// run application as tray icon
         }
         
 

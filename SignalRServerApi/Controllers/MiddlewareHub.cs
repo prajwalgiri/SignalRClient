@@ -19,9 +19,9 @@ namespace SignalRServerApi.Controllers
         public override Task OnConnectedAsync()
         {
             _logger.LogInformation("Client Connected, Context:{0}", JsonSerializer.Serialize( this.Context.User));
-            HttpContext httpContext =Context.GetHttpContext();
+            HttpContext httpContext =Context.GetHttpContext()!;
             //need to identify the connected client for logging only 
-            object authUser = httpContext.Items["User"];
+            object authUser = httpContext.Items["User"]!;
             _logger.LogInformation($"Connected User:{authUser}");
             
             return base.OnConnectedAsync();
@@ -42,6 +42,11 @@ namespace SignalRServerApi.Controllers
         {
              
         }
+        public async Task HandleActionStep1Async()
+        {
+             await DoStep1();
+        }
+
         public async Task HandleActionAsync(RequestPayload payload)
         {
             switch (payload.ActionType)
@@ -60,23 +65,24 @@ namespace SignalRServerApi.Controllers
 
         }
         
-        public async Task DoStep1()
+        private async Task DoStep1()
         {
             ServerResponse response = new ServerResponse(){ Success=true ,Message="Step1 Done.",CurrentAction=ActionType.Step1};
             await Clients.Client(Context.ConnectionId).SendAsync(HubMessageType.InvokeClientAction,response);
         }
-        public async Task DoStep2()
+        private async Task DoStep2()
         {
             ServerResponse response = new ServerResponse() { Success = true, Message = "Step2 Done.", CurrentAction = ActionType.Step2 };
             await Clients.Client(Context.ConnectionId).SendAsync(HubMessageType.InvokeClientAction, response);
 
         }
-        public async Task DoStep3()
+        private async Task DoStep3()
         {
             ServerResponse response = new ServerResponse() { Success = true, Message = "Step3 Done.", CurrentAction = ActionType.Step3 };
             await Clients.Client(Context.ConnectionId).SendAsync(HubMessageType.InvokeClientAction, response);
 
         }
 
+        
     }
 }
