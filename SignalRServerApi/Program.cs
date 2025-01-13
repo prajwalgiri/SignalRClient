@@ -67,4 +67,5 @@ app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
 app.MapHub<MiddlewareHub>("/connectionhub");
+app.MapHub<PlusClientHub>("/plusclientlite");
 app.Run();
