@@ -48,7 +48,8 @@ namespace SignalRClientApp
             Token = token;
             WriteToLogSync($"Token:{token}");
             ConnectionUrl = "https://localhost:7109/connectionhub";
-            Task.Run(()=> InitializeConnection());
+            //Task.Run(()=> InitializeConnection());
+           
 
         }
         private void GetToken()
@@ -112,7 +113,7 @@ namespace SignalRClientApp
                 await PerformNextStep();
             }
         }
-        
+
         private async Task PerformNextStep()
         {
             WriteToLog("Performing next step....");
@@ -129,12 +130,17 @@ namespace SignalRClientApp
 
         }
 
-        
+
 
         private void ClientApp_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true; //hide form instead of close 
             this.Hide();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            InitializeConnection();
         }
     }
 }

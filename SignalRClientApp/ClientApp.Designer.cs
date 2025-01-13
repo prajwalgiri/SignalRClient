@@ -42,6 +42,7 @@
             lblStep1 = new Label();
             groupBox2 = new GroupBox();
             txtLog = new RichTextBox();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -70,6 +71,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(button1);
             groupBox1.Controls.Add(groupBox3);
             groupBox1.Location = new Point(10, 17);
             groupBox1.Name = "groupBox1";
@@ -198,6 +200,16 @@
             txtLog.TabIndex = 0;
             txtLog.Text = "";
             // 
+            // button1
+            // 
+            button1.Location = new Point(271, 356);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 1;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // ClientApp
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -234,5 +246,6 @@
         private Label lblStep3Tick;
         private Label lblStep2Tick;
         private Label lblStep1Tick;
+        private Button button1;
     }
 }

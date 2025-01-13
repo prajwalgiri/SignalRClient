@@ -27,6 +27,8 @@ internal class TrayIconContext:ApplicationContext
             
         };
         trayIcon.DoubleClick += Open;
+        clientApp = new ClientApp();
+        clientApp.Show();
     }
     private ContextMenuStrip CreateContextMenu()
     {
@@ -47,7 +49,7 @@ internal class TrayIconContext:ApplicationContext
     {
         // Hide tray icon, otherwise it will remain shown until user mouses over it
         //Application.Run(new ClientApp());
-        if(clientApp==null)clientApp = new ClientApp();
+        //if(clientApp==null)clientApp = new ClientApp();
         clientApp.Show();
     }
 
