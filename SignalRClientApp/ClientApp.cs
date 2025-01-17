@@ -39,7 +39,7 @@ namespace SignalRClientApp
             await connection.StartAsync();
             WriteToLog("Connection started....");
             WriteToLog("Starting the process....");
-            await connection.SendAsync(HubMessageType.PerfromStep1, new RequestPayload { ActionType = CurrentAction, data = "Step1" });
+            await connection.SendAsync(HubMessageType.InvokeServerAction, new RequestPayload { ActionType = CurrentAction, data = "Step1" });
 
         }
         public ClientApp(string token = "")
