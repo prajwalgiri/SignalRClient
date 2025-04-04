@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SignalRServerApi.Controllers;
 using SignalRServerApi.Helpers;
+using SignalRServerApi.NotificationService;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,11 +10,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options=>
+{
+        options.IdleTimeout = TimeSpan.FromSeconds(10);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+});
 //only for jwt validation middleware
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<INotificationUserService, NotificationUser>();
+builder.Services.AddSingleton<INotificationManager, NotificationManager>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddAuthentication(options =>
 {
     // Identity made Cookie authentication the default.
@@ -41,7 +54,7 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            var accessToken = context.Request.Query["access_token"];
+            var accessToken = context.Request.Headers["Authorization"].ToString();
 
             // If the request is for our hub...
             var path = context.HttpContext.Request.Path;
@@ -49,7 +62,7 @@ builder.Services.AddAuthentication(options =>
                 )
             {
                 // Read the token out of the query string
-                context.Token = accessToken;
+                context.Token = accessToken.Split(' ')[1];
             }
 
             return Task.CompletedTask;
@@ -67,4 +80,28 @@ app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
 app.MapHub<MiddlewareHub>("/connectionhub");
+app.UseSession();
+app.MapGet("/notifications", async Task (HttpContext ctx, INotificationService service, CancellationToken token) =>
+{
+    var name = ctx.Request.Query["name"];
+    await service.ConnectAsync(token, name);
+});
+app.MapGet("/notifications/mark-as-read", async Task (HttpContext ctx, INotificationService service, CancellationToken token) =>
+{
+    var id = ctx.Request.Query["id"];
+    var name = ctx.Request.Query["user"];
+    await service.MarkAsRead(id, name, token);
+});
+app.MapPost("/notifications/add", async Task (HttpContext ctx,
+    INotificationService service,
+    CancellationToken token
+
+    ) =>
+{
+    var users = ctx.Request.Form["users"];
+    var msg = ctx.Request.Form["msg"];
+    var userList = JsonSerializer.Deserialize<List<string>>(users) ?? new List<string>();
+    var @notification = new Notification(Guid.NewGuid(), msg);
+    await service.AddNotification(@notification, userList, token);
+});
 app.Run();

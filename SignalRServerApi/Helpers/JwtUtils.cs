@@ -20,6 +20,7 @@ public class User
 
     [JsonIgnore]
     public string? Password { get; set; }
+    public string? ConnectionId { get; set; }
 }
 public class AppSettings
 {

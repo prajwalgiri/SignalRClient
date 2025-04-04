@@ -21,7 +21,7 @@ namespace SignalRServerApi.Controllers
 
             if (response == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
-
+            HttpContext.Items["User"]=model.Username;
             return Ok(response);
         }
         

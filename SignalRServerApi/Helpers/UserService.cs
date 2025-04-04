@@ -21,6 +21,9 @@ public interface IUserService
     AuthenticateResponse? Authenticate(AuthenticateRequest model);
     IEnumerable<User> GetAll();
     User? GetById(string id);
+    void MapConnection(string user, string connectionId);
+    public User GetUserbyConnectionId(string connectionId);
+
 }
 
 public class UserService : IUserService
@@ -32,10 +35,12 @@ public class UserService : IUserService
     };
 
     private readonly IJwtUtils _jwtUtils;
+    private readonly IHttpContextAccessor _context;
 
-    public UserService(IJwtUtils jwtUtils)
+    public UserService(IJwtUtils jwtUtils,IHttpContextAccessor httpContext)
     {
         _jwtUtils = jwtUtils;
+        _context = httpContext;
     }
 
     public AuthenticateResponse? Authenticate(AuthenticateRequest model)
@@ -47,7 +52,7 @@ public class UserService : IUserService
 
         // authentication successful so generate jwt token
         var token = _jwtUtils.GenerateJwtToken(user);
-
+        _context.HttpContext.Session.SetString("user", user.Username);
         return new AuthenticateResponse(user, token);
     }
 
@@ -60,5 +65,14 @@ public class UserService : IUserService
     public User? GetById(string id)
     {
         return _users.FirstOrDefault(x => x.Username == id);
+    }
+    public void MapConnection(string user,string connectionId)
+    {
+        var currentUser=_users.Find(x => x.Username == user)??null;
+        if (currentUser!=null) currentUser.ConnectionId= connectionId;
+    }
+    public User GetUserbyConnectionId(string connectionId)
+    {
+        return _users.Find(x=>x.ConnectionId == connectionId);
     }
 }

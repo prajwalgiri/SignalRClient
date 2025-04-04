@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SignalRServerApi.Helpers;
+using SignalRServerApi.NotificationService;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -11,9 +12,13 @@ namespace SignalRServerApi.Controllers
     public class MiddlewareHub : Hub
     {
         private  readonly ILogger<object> _logger;
-        public MiddlewareHub(ILogger<object> logger)
+        private readonly INotificationManager _notificationManager;
+        private readonly IUserService _userService;
+        public MiddlewareHub(ILogger<object> logger,INotificationManager notificationManager,IUserService userService)
         {
             _logger = logger;
+            _notificationManager = notificationManager;
+            _userService = userService;
         }
         private static readonly ConcurrentDictionary<string, string> UserConnections = new();
         public override Task OnConnectedAsync()
@@ -22,8 +27,10 @@ namespace SignalRServerApi.Controllers
             HttpContext httpContext =Context.GetHttpContext();
             //need to identify the connected client for logging only 
             object authUser = httpContext.Items["User"];
+
             _logger.LogInformation($"Connected User:{authUser}");
-            
+            _userService.MapConnection(httpContext.Request.Headers["User"].ToString() ,Context.ConnectionId);
+            NotifyConnectionsFront("User Connected.");
             return base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
@@ -33,9 +40,11 @@ namespace SignalRServerApi.Controllers
             {
                 UserConnections.TryRemove(user, out _);
                 await Clients.All.SendAsync("UserDisconnected", user);
+                NotifyConnectionsFront("UserDisconnected");
             }
             await base.OnDisconnectedAsync(exception);
             _logger.LogInformation($"Disconnected :{exception}");
+            
         }
         
         public async Task HandleNotificationFromClient()
@@ -63,20 +72,30 @@ namespace SignalRServerApi.Controllers
         public async Task DoStep1()
         {
             ServerResponse response = new ServerResponse(){ Success=true ,Message="Step1 Done.",CurrentAction=ActionType.Step1};
+            NotifyConnectionsFront("Step 1 Complete");
             await Clients.Client(Context.ConnectionId).SendAsync(HubMessageType.InvokeClientAction,response);
         }
         public async Task DoStep2()
         {
             ServerResponse response = new ServerResponse() { Success = true, Message = "Step2 Done.", CurrentAction = ActionType.Step2 };
+            NotifyConnectionsFront("Step 2 Complete");
             await Clients.Client(Context.ConnectionId).SendAsync(HubMessageType.InvokeClientAction, response);
 
         }
         public async Task DoStep3()
         {
             ServerResponse response = new ServerResponse() { Success = true, Message = "Step3 Done.", CurrentAction = ActionType.Step3 };
+            NotifyConnectionsFront("Step 3 Complete");
+            NotifyConnectionsFront("All Task Completed");
             await Clients.Client(Context.ConnectionId).SendAsync(HubMessageType.InvokeClientAction, response);
 
         }
 
+        private async void  NotifyConnectionsFront(string msg)
+        {
+            HttpContext httpContext = Context.GetHttpContext();
+            var user = _userService.GetUserbyConnectionId(Context.ConnectionId);
+           await _notificationManager.Add(msg,user.Username , new CancellationToken());
+        }
     }
 }

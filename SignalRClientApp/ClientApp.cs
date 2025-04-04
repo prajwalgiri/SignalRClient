@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -19,6 +20,8 @@ namespace SignalRClientApp
         internal string ConnectionUrl { get; set; }
         internal string Token { get; set; }
         internal ActionType CurrentAction { get; set; }= ActionType.Step1;
+        private static string Username { get; set; } = "test";
+        private static  object Loginuser { get { return new { Username = Username, Password = "test" }; } }
         public async Task InitializeConnection()
         {
             GetToken();
@@ -28,6 +31,7 @@ namespace SignalRClientApp
                .WithUrl(ConnectionUrl, options =>
                {
                   options.Headers.Add("Authorization", $"Bearer {Token}");
+                  options.Headers.Add("User", $"{Username}");
                })
                .WithAutomaticReconnect(new[] { TimeSpan.Zero, TimeSpan.Zero, TimeSpan.FromSeconds(10) })
                 .Build();
@@ -50,7 +54,7 @@ namespace SignalRClientApp
         private  void GetToken()
         {
             HttpClient client = new HttpClient();
-            HttpContent httpContent = new StringContent(JsonSerializer.Serialize(new { Username = "test", Password = "test" }), Encoding.UTF8, "application/json");
+            HttpContent httpContent = new StringContent(JsonSerializer.Serialize(Loginuser), Encoding.UTF8, "application/json");
             var response = client.PostAsync(ConnectionUrl.Remove(ConnectionUrl.Length-13)+ "login/authenticate", httpContent).Result;
             if (response.IsSuccessStatusCode)
             {
