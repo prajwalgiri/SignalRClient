@@ -66,10 +66,15 @@ public class UserService : IUserService
     {
         return _users.FirstOrDefault(x => x.Username == id);
     }
-    public void MapConnection(string user,string connectionId)
+    public void MapConnection(string user, string connectionId)
     {
-        var currentUser=_users.Find(x => x.Username == user)??null;
-        if (currentUser!=null) currentUser.ConnectionId= connectionId;
+        var currentUser = _users.Find(x => x.Username == user) ?? null;
+        _users.Remove(currentUser);
+        if (currentUser != null)
+        {
+            currentUser.ConnectionId = connectionId;
+            _users.Add(currentUser);
+        }
     }
     public User GetUserbyConnectionId(string connectionId)
     {

@@ -19,8 +19,8 @@ builder.Services.AddSession(options=>
 });
 //only for jwt validation middleware
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-builder.Services.AddScoped<IJwtUtils, JwtUtils>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<IJwtUtils, JwtUtils>();
+builder.Services.AddSingleton<IUserService, UserService>();
 
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<INotificationUserService, NotificationUser>();
