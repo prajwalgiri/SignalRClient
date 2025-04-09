@@ -30,9 +30,12 @@
         {
             splitContainer1 = new SplitContainer();
             groupBox1 = new GroupBox();
+            txtUrl = new TextBox();
             btnStart = new Button();
             btnConnect = new Button();
             groupBox3 = new GroupBox();
+            textBox2 = new TextBox();
+            textBox1 = new TextBox();
             lblStep4Tick = new Label();
             lblStep3Tick = new Label();
             lblStep2Tick = new Label();
@@ -43,7 +46,6 @@
             lblStep1 = new Label();
             groupBox2 = new GroupBox();
             txtLog = new RichTextBox();
-            txtUrl = new TextBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -83,6 +85,14 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "Connection";
             // 
+            // txtUrl
+            // 
+            txtUrl.Location = new Point(26, 308);
+            txtUrl.Name = "txtUrl";
+            txtUrl.PlaceholderText = "Url";
+            txtUrl.Size = new Size(312, 23);
+            txtUrl.TabIndex = 3;
+            // 
             // btnStart
             // 
             btnStart.Location = new Point(154, 348);
@@ -105,6 +115,8 @@
             // 
             // groupBox3
             // 
+            groupBox3.Controls.Add(textBox2);
+            groupBox3.Controls.Add(textBox1);
             groupBox3.Controls.Add(lblStep4Tick);
             groupBox3.Controls.Add(lblStep3Tick);
             groupBox3.Controls.Add(lblStep2Tick);
@@ -119,6 +131,24 @@
             groupBox3.TabIndex = 0;
             groupBox3.TabStop = false;
             groupBox3.Text = "Steps";
+            // 
+            // textBox2
+            // 
+            textBox2.Location = new Point(148, 232);
+            textBox2.Name = "textBox2";
+            textBox2.PlaceholderText = "Password";
+            textBox2.Size = new Size(100, 23);
+            textBox2.TabIndex = 9;
+            textBox2.TextChanged += textBox2_TextChanged;
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(20, 232);
+            textBox1.Name = "textBox1";
+            textBox1.PlaceholderText = "Username";
+            textBox1.Size = new Size(100, 23);
+            textBox1.TabIndex = 8;
+            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // lblStep4Tick
             // 
@@ -223,14 +253,6 @@
             txtLog.TabIndex = 0;
             txtLog.Text = "";
             // 
-            // txtUrl
-            // 
-            txtUrl.Location = new Point(26, 308);
-            txtUrl.Name = "txtUrl";
-            txtUrl.PlaceholderText = "Url";
-            txtUrl.Size = new Size(312, 23);
-            txtUrl.TabIndex = 3;
-            // 
             // ClientApp
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -269,5 +291,7 @@
         private Label lblStep1Tick;
         private Button btnStart;
         private TextBox txtUrl;
+        private TextBox textBox2;
+        private TextBox textBox1;
     }
 }
