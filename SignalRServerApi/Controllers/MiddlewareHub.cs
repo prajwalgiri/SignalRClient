@@ -14,11 +14,13 @@ namespace SignalRServerApi.Controllers
         private  readonly ILogger<object> _logger;
         private readonly INotificationManager _notificationManager;
         private readonly IUserService _userService;
-        public MiddlewareHub(ILogger<object> logger,INotificationManager notificationManager,IUserService userService)
+        private readonly IJwtUtils _jwtUtils;
+        public MiddlewareHub(ILogger<object> logger,INotificationManager notificationManager,IUserService userService,IJwtUtils jwtUtils)
         {
             _logger = logger;
             _notificationManager = notificationManager;
             _userService = userService;
+            _jwtUtils = jwtUtils;
         }
         private static readonly ConcurrentDictionary<string, string> UserConnections = new();
         public override Task OnConnectedAsync()
@@ -26,10 +28,9 @@ namespace SignalRServerApi.Controllers
             _logger.LogInformation("Client Connected, Context:{0}", JsonSerializer.Serialize( this.Context.User));
             HttpContext httpContext =Context.GetHttpContext();
             //need to identify the connected client for logging only 
-            object authUser = httpContext.Items["User"];
-
+            var authUser =  _jwtUtils.ValidateJwtToken(httpContext.Request.Headers.Authorization);
             _logger.LogInformation($"Connected User:{authUser}");
-            _userService.MapConnection(httpContext.Request.Headers["User"].ToString() ,Context.ConnectionId);
+            _userService.MapConnection(authUser,Context.ConnectionId);
             NotifyConnectionsFront("User Connected.");
             return base.OnConnectedAsync();
         }

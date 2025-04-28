@@ -81,17 +81,17 @@ app.UseAuthentication();
 app.MapControllers();
 app.MapHub<MiddlewareHub>("/connectionhub");
 app.UseSession();
-app.MapGet("/notifications", async Task (HttpContext ctx, INotificationService service, CancellationToken token) =>
-{
-    var name = ctx.Request.Query["name"];
-    await service.ConnectAsync(token, name);
-});
-app.MapGet("/notifications/mark-as-read", async Task (HttpContext ctx, INotificationService service, CancellationToken token) =>
-{
-    var id = ctx.Request.Query["id"];
-    var name = ctx.Request.Query["user"];
-    await service.MarkAsRead(id, name, token);
-});
+//app.MapGet("/notifications", async Task (HttpContext ctx, INotificationService service, CancellationToken token) =>
+//{
+//    var name = ctx.Request.Query["name"];
+//    await service.ConnectAsync(token, name);
+//});
+//app.MapGet("/notifications/mark-as-read", async Task (HttpContext ctx, INotificationService service, CancellationToken token) =>
+//{
+//    var id = ctx.Request.Query["id"];
+//    var name = ctx.Request.Query["user"];
+//    await service.MarkAsRead(id, name, token);
+//});
 app.MapPost("/notifications/add", async Task (HttpContext ctx,
     INotificationService service,
     CancellationToken token
