@@ -23,7 +23,6 @@ builder.Services.AddSingleton<IJwtUtils, JwtUtils>();
 builder.Services.AddSingleton<IUserService, UserService>();
 
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddSingleton<INotificationUserService, NotificationUser>();
 builder.Services.AddSingleton<INotificationManager, NotificationManager>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddAuthentication(options =>

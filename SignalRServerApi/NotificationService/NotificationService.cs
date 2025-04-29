@@ -7,9 +7,9 @@ namespace SignalRServerApi.NotificationService
     public class NotificationService : INotificationService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly INotificationUserService _userService;
+        private readonly IUserService _userService;
         private readonly INotificationManager _notificationManager;
-        public NotificationService(IHttpContextAccessor httpContextAccessor, INotificationUserService userService, INotificationManager notificationManager)
+        public NotificationService(IHttpContextAccessor httpContextAccessor, IUserService userService, INotificationManager notificationManager)
         {
             _httpContextAccessor = httpContextAccessor;
             _userService = userService;
@@ -23,7 +23,7 @@ namespace SignalRServerApi.NotificationService
 
         public async Task ConnectAsync(CancellationToken cancellationToken, string name)
         {
-            if (_userService.AddUser(name))
+            if (_userService.GetById(name)!=null)
             {
                 //just to add dummy notifications to write to client 
                 await _notificationManager.AddDummyNotifications(name);
