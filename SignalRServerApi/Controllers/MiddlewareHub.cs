@@ -28,7 +28,7 @@ namespace SignalRServerApi.Controllers
             _logger.LogInformation("Client Connected, Context:{0}", JsonSerializer.Serialize( this.Context.User));
             HttpContext httpContext =Context.GetHttpContext();
             //need to identify the connected client for logging only 
-            var authUser =  _jwtUtils.ValidateJwtToken(httpContext.Request.Headers.Authorization);
+            var authUser =  _jwtUtils.ValidateJwtTokenString(httpContext.Request.Headers.Authorization.ToString());
             _logger.LogInformation($"Connected User:{authUser}");
             _userService.MapConnection(authUser,Context.ConnectionId);
             NotifyConnectionsFront("User Connected.");
@@ -95,6 +95,7 @@ namespace SignalRServerApi.Controllers
         private async void  NotifyConnectionsFront(string msg)
         {
             HttpContext httpContext = Context.GetHttpContext();
+            var authUser = _jwtUtils.ValidateJwtToken(httpContext.Request.Headers.Authorization.ToString().Split(" ")[1]);
             var user = _userService.GetUserbyConnectionId(Context.ConnectionId);
            await _notificationManager.Add(msg,user.Username , new CancellationToken());
         }

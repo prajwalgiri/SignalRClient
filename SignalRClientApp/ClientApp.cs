@@ -49,7 +49,7 @@ namespace SignalRClientApp
             InitializeComponent();
             Token = token;
             WriteToLogSync($"Token:{token}");
-            txtUrl.Text = "https://localhost/connectionhub";
+            txtUrl.Text = "https://localhost:7109/connectionhub";
             //InitializeConnection();
         }
         private void GetToken()

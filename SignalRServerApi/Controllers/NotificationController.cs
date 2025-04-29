@@ -6,13 +6,23 @@ using System.Xml.Linq;
 
 namespace SignalRServerApi.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class NotificationController : Controller
     {
         private readonly IJwtUtils _jwtUtils;
-        public NotificationController(IJwtUtils jwtUtils) { _jwtUtils = jwtUtils; }
-        public async Task Index(HttpContext ctx, INotificationService service, CancellationToken token)
+        private readonly HttpContext ctx;
+        private readonly INotificationService service;
+        public NotificationController(IJwtUtils jwtUtils,IHttpContextAccessor httpContext,INotificationService notificationService)
         {
-            var authuser = _jwtUtils.ValidateJwtToken(ctx.Request.Headers.Authorization);
+            _jwtUtils = jwtUtils;
+            ctx = httpContext.HttpContext!;
+            service = notificationService;
+        
+        }
+        public async Task Index(CancellationToken token)
+        {
+            var authuser = _jwtUtils.ValidateJwtTokenString(ctx.Request.Headers.Authorization);
             if (authuser == null) {
                 ctx.Response.StatusCode= (int)HttpStatusCode.Forbidden;
                 await ctx.Response.WriteAsync("Unauthorized");

@@ -11,6 +11,7 @@ public interface IJwtUtils
 {
     public string GenerateJwtToken(User user);
     public string? ValidateJwtToken(string? token);
+    public string? ValidateJwtTokenString(string? token);
 }
 
 public class User
@@ -61,6 +62,10 @@ public class JwtUtils : IJwtUtils
         return tokenHandler.WriteToken(token);
     }
 
+    public string? ValidateJwtTokenString(string? token)
+    {
+        return ValidateJwtToken(token.Split(" ")[1]);
+    }
     public string? ValidateJwtToken(string? token)
     {
         if (token == null)
