@@ -1,6 +1,7 @@
 ﻿using Microsoft.Net.Http.Headers;
 using SignalRServerApi.Helpers;
 using System.Text.Json;
+using System.Web;
 
 namespace SignalRServerApi.NotificationService
 {
@@ -23,6 +24,7 @@ namespace SignalRServerApi.NotificationService
 
         public async Task ConnectAsync(CancellationToken cancellationToken, string name)
         {
+            cancellationToken = _httpContextAccessor.HttpContext.RequestAborted;
             if (_userService.GetById(name)!=null)
             {
                 //just to add dummy notifications to write to client 
@@ -30,6 +32,7 @@ namespace SignalRServerApi.NotificationService
                 _httpContextAccessor.HttpContext.Response.Headers.Append(HeaderNames.ContentType, "text/event-stream");
                 while (!cancellationToken.IsCancellationRequested)
                 {
+
                     await WriteNotificationToStream(name, cancellationToken);
                 }
 
