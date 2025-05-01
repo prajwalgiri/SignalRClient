@@ -124,8 +124,12 @@ namespace SignalRClientApp
         private async void btnStart_Click(object sender, EventArgs e)
         {
             WriteToLog("Starting the process....");
+            if(connection.State== HubConnectionState.Connected) 
             await connection.SendAsync(HubMessageType.InvokeServerAction, new RequestPayload { ActionType = CurrentAction, data = "Step1" });
-
+            else
+            {
+                WriteToLog("Connection is not Open");
+            }
         }
         private async Task PerformNextStep()
         {

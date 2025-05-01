@@ -24,7 +24,7 @@ namespace SignalRServerApi.NotificationService
 
         public async Task ConnectAsync(CancellationToken cancellationToken, string name)
         {
-            cancellationToken = _httpContextAccessor.HttpContext.RequestAborted;
+            //cancellationToken = _httpContextAccessor.HttpContext.RequestAborted;
             if (_userService.GetById(name)!=null)
             {
                 //just to add dummy notifications to write to client 
@@ -35,7 +35,7 @@ namespace SignalRServerApi.NotificationService
 
                     await WriteNotificationToStream(name, cancellationToken);
                 }
-
+                await RestMessageSentQueue(name);
             }
             else
             {
@@ -81,6 +81,7 @@ namespace SignalRServerApi.NotificationService
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var payload = JsonSerializer.Serialize(notification);
+                Console.WriteLine("Payload:" + payload);
                 await _httpContextAccessor.HttpContext.Response.WriteAsync($"data: {payload} \n\n", cancellationToken);
                 await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
                 await _notificationManager.MarkAsSent(notification.id, name, cancellationToken);
@@ -88,12 +89,18 @@ namespace SignalRServerApi.NotificationService
             }
             await Task.Delay(1000);// simulate delay because the client kept freezing
         }
+        public async Task RestMessageSentQueue(string name)
+        {
+            await _notificationManager.RestMessageSentQueue(name);
+        }
+
     }
     public interface INotificationService
     {
         Task ConnectAsync(CancellationToken cancellationToken, string name);
         Task AddNotification(Notification @Notification, List<string> users, CancellationToken cancellationToken);
         Task MarkAsSent(string id, string name, CancellationToken cancellationToken);
+        Task RestMessageSentQueue(string name);
         Task MarkAsRead(string id, string name, CancellationToken cancellationToken);
     }
 }

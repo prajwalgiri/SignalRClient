@@ -1,4 +1,6 @@
-﻿namespace SignalRServerApi.NotificationService
+﻿using System;
+
+namespace SignalRServerApi.NotificationService
 {
     public class NotificationManager : INotificationManager
     {
@@ -88,7 +90,19 @@
 
             });
         }
-
+        public async Task RestMessageSentQueue(string user)
+        {
+            await Task.Run(() =>
+            {
+                var notifications = _notifications.Where(n => (n.Item2 == user || n.Item2 == "All")).ToList();
+                if (notifications.Count==0) return;
+                foreach (var notification in notifications)
+                {
+                    _notifications.Remove(notification);
+                    _notifications.Add(new Tuple<Notification, string, bool, bool>(notification.Item1, notification.Item2, false, false));
+                }
+            });
+        }
         public async Task AddDummyNotifications(string user)
         {
             if (_notifications.FindAll(x => x.Item2 == user).Count > 0) return;
@@ -109,6 +123,7 @@
         public Task MarkAsSent(Guid id, string user, CancellationToken cancellationToken);
         public Task MarkAsRead(Guid id, string user, CancellationToken cancellationToken);
         public Task AddDummyNotifications(string user);
+        public Task RestMessageSentQueue(string user);
     }
     public record Notification(Guid id, string msg);
 }

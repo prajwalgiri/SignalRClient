@@ -244,7 +244,7 @@
             // txtLog
             // 
             txtLog.BackColor = SystemColors.ActiveBorder;
-            txtLog.Enabled = false;
+            txtLog.Enabled = true;
             txtLog.Location = new Point(6, 22);
             txtLog.Name = "txtLog";
             txtLog.RightToLeft = RightToLeft.No;
